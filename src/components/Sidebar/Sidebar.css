@@ -1,0 +1,30 @@
+
+.Sidebar {
+    --_sidebar-dim: 43px;
+    width: var(--_sidebar-dim);
+    background-color: var(--background-color-dark);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.options {
+    width: 100%;
+    gap: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+@media only screen and (max-width: 768px) {
+    .Sidebar {
+        width: 100vw;
+        height: var(--_sidebar-dim);
+    }
+    .options {
+        flex-direction: row;
+    }
+}

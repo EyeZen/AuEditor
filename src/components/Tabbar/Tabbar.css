@@ -1,0 +1,53 @@
+.Tabbar {
+    height: var(--tabbar-height);
+    background-color: var(--background-color-dark);
+    display: flex;
+    font-size: 0.8rem;
+}
+.tab {
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    color: var(--text-color-light);
+    cursor: pointer;
+    user-select: none;
+
+    & .IconButton {
+        width: calc(0.5 * var(--tabbar-height));
+        aspect-ratio: 1;
+        border-radius: 2px;
+        visibility: hidden;
+
+        &:hover span {
+            display: none;
+        }
+        & img {
+            width: 0.5em;
+        }
+    }
+
+    &:hover .IconButton {
+        visibility: visible;
+    }
+}
+.default-tab {
+    font-style: italic;
+}
+.active-tab {
+    background-color: var(--background-color);
+    & .IconButton {
+        visibility: visible;
+    }
+}
+
+input.tab-name {
+    color: var(--text-color);
+    background: none;
+    background-color: var(--background-color-light);
+    border: 1px solid var(--border-color);
+    &:focus {
+        outline: none;
+    }
+}

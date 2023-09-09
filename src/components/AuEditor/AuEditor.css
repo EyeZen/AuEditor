@@ -1,0 +1,36 @@
+.editor {
+    --_editor-height: 100vh;
+    --_toolbar-height: 43px;
+    color: var(--text-color);
+    flex: 1;
+}
+
+.quill {
+    background-color: var(--background-color);
+}
+.ql-editor { 
+    height: calc(100vh - var(--_toolbar-height) - var(--tabbar-height));
+}
+.ql-snow.ql-toolbar { 
+    border-color: var(--border-color);
+}
+.ql-snow.ql-container {
+    border-color: var(--border-color);
+}
+.ql-snow .ql-stroke {
+    stroke: var(--text-color);
+}
+.ql-snow .ql-picker {
+    color: var(--text-color);
+}
+
+.translated-text {
+    display: inline;
+    color: yellow;
+}
+
+@media only screen and (max-width: 768px) {
+    .ql-editor {
+        height: calc(100vh - 2 * var(--_toolbar-height));
+    }
+}

@@ -1,0 +1,54 @@
+.WelcomePage {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5%;
+    background-color: var(--background-color-light);
+}
+.WelcomePage h1 {
+    margin-block: 1em;
+}
+.WelcomePage p {
+    width: 60%;
+    font-size: 1.5em;
+}
+.WelcomePage main {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    /* align-items: center; */
+    width: 80%;
+    margin-top: 5%;
+}
+
+.WelcomePage section {
+    flex: 1;
+    background-color: var(--background-color-dark);
+    padding: 50px;
+    max-height: 250px;
+}
+.WelcomePage h2 {
+    margin-bottom: 1em;
+}
+.WelcomePage .option-btn {
+    background: none;
+    height: 2em;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0;
+    /* color: #ff7e67; */
+    color: var(--text-color);
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: underline;
+    }
+
+    & img {
+        width: 20px;
+        filter: hue-rotate(180deg);
+    }
+}

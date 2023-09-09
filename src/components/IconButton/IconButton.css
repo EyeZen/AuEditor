@@ -1,0 +1,50 @@
+
+.IconButton {
+    background: none;
+    outline: none;
+    border: none;
+    width: calc(0.8 * var(--_sidebar-dim));
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background-color: #50577A;
+    cursor: pointer;
+    transition: background-color 100ms;
+    position: relative;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &:hover {
+        background-color: #6B728E;
+    }
+    &:active {
+        background-color: #50577A;
+    }
+}
+
+.IconButton img {
+    width: 70%;
+    aspect-ratio: 1;
+}
+
+.IconButton .tooltip {
+    display: none;
+    position: absolute;
+    min-width: 100px;
+    left: 120%;
+    /* top: 0%; */
+    background-color: #2b2c3a;
+    color: var(--text-color);
+    padding: 1em;
+    opacity: 0.9;
+    z-index: 100;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+.IconButton:hover .tooltip {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

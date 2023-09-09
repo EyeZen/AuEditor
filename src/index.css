@@ -1,0 +1,28 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+:root {
+  --tabbar-height: 30px;
+
+  /* COLOR THEME */
+  --background-color: #474E68;
+  --background-color-light: #555d7c;
+  --background-color-dark: #40465c;
+  --border-color: #404258;
+  --text-color: #dde6ed;
+  --text-color-light:rgb(181, 187, 191);
+}
+
+body {
+  font-family: sans-serif;
+  background-color: var(--background-color-dark);
+}
+
+.vertical-stack {
+  display: flex;
+  flex-direction: column;
+}
