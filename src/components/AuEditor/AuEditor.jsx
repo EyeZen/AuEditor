@@ -2,50 +2,15 @@ import ReactQuill from "react-quill";
 import "quill/dist/quill.snow.css";
 import React, { Component } from "react";
 import WelcomePage from "./WelcomePage/WelcomePage";
-import { actions as AuDocumentActions } from "../../state/slices/openDocuments";
-import { connect } from "react-redux";
-import AuDocument from "../../utils/AuDocument";
 import OpenPage from "./OpenPage/OpenPage";
+import SettingsPage from "./SettingsPage/SettingsPage";
+import AccountPage from "./AccountPage/AccountPage";
 import "./AuEditor.css";
 
-// import { marked } from "marked";
-// import TurndownService from "turndown";
-
-function debounce(func, timeoutPeriod = 2000) {
-    let timeoutRef = null;
-    return (...params) => {
-        if (!timeoutRef) {
-            // if function not called yet
-            console.log("func: scheduled");
-            timeoutRef = setTimeout(() => {
-                // schedule a call
-                console.log("func: called");
-                func(...params);
-                timeoutRef = null;
-            }, timeoutPeriod);
-        } else {
-            // if function is already scheduled for a call, which hasn't happend yet
-            console.log("func: rescheduled");
-            clearTimeout(timeoutRef); // reschedule the call
-            timeoutRef = setTimeout(() => func(...params), timeoutPeriod);
-        }
-    };
-}
-
-function mapStateToProps(state) {
-    return {
-        openDocuments: state.openDocuments,
-    };
-}
-
-function mapDispatchToProps(dispatch) {
-    return {
-        setContent: (name, content) =>
-            dispatch(AuDocumentActions.setContent({ name, content })),
-        // open: (doc) => dispatch(AuDocumentActions.open(doc)),
-        // close: (doc) => dispatch(AuDocumentActions.close(doc)),
-    };
-}
+import { actions as AuDocumentActions } from "../../state/slices/documents";
+import { connect } from "react-redux";
+import AuDocument from "../../utils/AuDocument";
+import { debounce } from "../../utils/utils";
 
 class AuEditor extends Component {
     english_text = /([a-zA-Z]+\s*)+/;
@@ -65,8 +30,6 @@ class AuEditor extends Component {
             name: "",
             content: "",
         };
-
-        this.contentChangeHandler = debounce(this.transform.bind(this), 1000);
     }
 
     componentDidMount() {
@@ -105,27 +68,35 @@ class AuEditor extends Component {
                     <OpenPage
                         onOpen={(file) => console.log("Opening file:", file)}
                     />
+                ) : this.state.name === AuDocument.SettingsDocument.name ? (
+                    <SettingsPage />
+                ) : this.state.name === AuDocument.AccountDocument.name ? (
+                    <AccountPage />
                 ) : (
                     <ReactQuill
                         ref={this.quillRef}
                         theme="snow"
                         value={this.state.content}
-                        onChange={this.contentChangeHandler}
+                        onChange={debounce(
+                            this.contentChangeHandler.bind(this),
+                            1000
+                        )}
                     />
                 )}
             </div>
         );
     }
 
-    setCursorPosition(index) {
-        const quill = this.quillRef.current?.editor;
-        if (quill) {
-            console.log("Cursor Change");
-            setTimeout(
-                () => quill.setSelection(quill.getSelection().index + index, 0),
-                0
-            );
+    contentChangeHandler(content) {
+        let newContent = content;
+        if (this.props.settings.translate.enabled) {
+            newContent = this.transform(content);
         }
+
+        this.setState({
+            content: newContent,
+        });
+        this.props.setContent(this.state.name, newContent);
     }
 
     async translate(sentence) {
@@ -159,12 +130,7 @@ class AuEditor extends Component {
         let parsedHTML = await this.parseText(editorHTML);
         console.log("Transformed:", parsedHTML.innerHTML, parsedHTML);
         const newContent = parsedHTML.innerHTML;
-        this.setState({
-            content: newContent,
-        });
-
-        // TODO: could debounce this part, for decreasing load on the rest of the subscribers of the content
-        this.props.setContent(this.state.name, newContent);
+        return newContent;
     }
 
     async parseText(node) {
@@ -213,52 +179,22 @@ class AuEditor extends Component {
         textArray.push(text);
         return textArray;
     }
+}
 
-    async handleContentChange(editorText) {
-        console.log("eid-input:", editorText);
-        const editorHTML = this.parser.parseFromString(
-            editorText,
-            "text/html"
-        ).body;
-        let text = this.turndownService.turndown(editorHTML.innerHTML ?? "");
-        console.log("turned-down: ", editorHTML.innerHTML, "=>", text);
+function mapStateToProps(state) {
+    return {
+        openDocuments: state.documents.openList,
+        settings: state.settings,
+    };
+}
 
-        if (
-            /(^\1)*([a-zA-Z\s]+[?.!])$/.test(text) &&
-            this.sentence_end.test(text)
-        ) {
-            let reverseText = text
-                .slice(0, text.length - 1)
-                .split("")
-                .reverse()
-                .join("");
-            let lastSentenceStart = reverseText.search(
-                this.sentence_end_marker
-            );
-            // let lastSentenceStart = text.lastIndexOf(".", text.length - 2) + 1;
-            if (lastSentenceStart < 0) lastSentenceStart = 0;
-            else lastSentenceStart = text.length - 1 - lastSentenceStart;
-            const translatedSentence = await this.translate(
-                text.slice(lastSentenceStart)
-            );
-            let preText = text.slice(0, lastSentenceStart);
-            let newText = `${preText} ${translatedSentence}`;
-            let cursorPos = newText.length;
-            // if (lastSentenceStart === 0) {
-            //     newText = `<p>${newText}</p>`;
-            // }
-            console.log("modified:", newText);
-            newText = marked(newText);
-            if (!/^<([a-zA-Z]+)>.*<\/\1>$/.test(newText)) {
-                newText = `<p>${newText}</p>`;
-            }
-            console.log("marked", newText);
-            this.setState({ content: newText });
-            this.setCursorPosition(cursorPos);
-        } else {
-            this.setState({ content: editorText });
-        }
-    }
+function mapDispatchToProps(dispatch) {
+    return {
+        setContent: (name, content) =>
+            dispatch(AuDocumentActions.setContent({ name, content })),
+        // open: (doc) => dispatch(AuDocumentActions.open(doc)),
+        // close: (doc) => dispatch(AuDocumentActions.close(doc)),
+    };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AuEditor);

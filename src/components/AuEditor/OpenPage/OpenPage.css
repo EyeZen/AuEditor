@@ -1,4 +1,12 @@
+
+.OpenPage * {
+    transition: all 200ms linear;
+}
 .OpenPage {
+    --_file-dim: 80px;
+    --_option-icon-dim: 25px;
+    --_option-icon-half_dim: calc(var(--_option-icon-dim) / 2);
+
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -11,7 +19,7 @@
     display: flex;
     width: 50%;
     gap: 1em;
-    padding: 10px;
+    padding-block: 15px;
     padding-inline: 20px;
     background-color: var(--background-color);
     border-radius: 5px;
@@ -22,14 +30,29 @@
     border: none;
     background: none;
     color: var(--text-color);
+    text-align: center;
+
+    &::placeholder {
+        color: rgb(183, 183, 183)
+    }
 }
-.OpenPage .search-bar .IconButton {
+/* .OpenPage .search-bar .IconButton, */
+.OpenPage .group-options .IconButton {
     width: 35px;
-    /* background-color: var(--background-color-light); */
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.606);
 
     & .tooltip {
         display: none;
     }
+
+    &:hover {
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.606);
+        background-color: var(--background-color-light);
+    }
+}
+.OpenPage .group-options {
+    display: flex;
+    gap: 25px;
 }
 
 .OpenPage .docs-list {
@@ -41,7 +64,6 @@
     display: flex;
     gap: 1em;
     flex-wrap: wrap;
-
 }
 .OpenPage .file-icon {
     width: 40px;
@@ -54,16 +76,25 @@
     justify-content: center;
     align-items: center;
     gap: 0.5em;
-    width: 80px;
-    height: 80px;
+    width: var(--_file-dim);
+    height: var(--_file-dim);
     cursor: pointer;
     user-select: none;
 
+    &.file-selected {
+        background-color: var(--background-color-dark);
+    }
 
     &:hover {
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.606);
         filter: brightness(1.2);
     }
 }
+.OpenPage .docs-list .file-wrapper:hover li {
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.606);
+    filter: brightness(1.2);
+}
+
 .OpenPage .docs-list .filename {
     max-width: 90%;
     font-size: 0.8em;
@@ -85,4 +116,55 @@
 }
 .OpenPage .empty p {
     font-size: 2rem;
+}
+
+.OpenPage .docs-list .file-wrapper {
+    width: var(--_file-dim);
+    height: var(--_file-dim);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    &:hover {
+        width: 120px;
+        height: 120px;
+    }
+}
+.OpenPage .docs-list .file-wrapper:hover .file-option {
+    display: initial;
+}
+.OpenPage .file-option {
+    display: none;
+    background-color: var(--background-color);
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.606);
+    width: var(--_option-icon-dim);
+    height: var(--_option-icon-dim);
+    position: absolute;
+    border-radius: 50%;
+    padding: 5px;
+    z-index: 10;
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.606);
+        background-color: var(--background-color-light);
+    }
+    &:active {
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.606);
+        background-color: var(--background-color-dark);
+    }
+}
+.OpenPage .file-option.delete-option {
+    left: calc(var(--_option-icon-dim) / 8);
+    top: calc(var(--_option-icon-dim) / 8);
+}
+.OpenPage .file-option.select-option {
+    right: calc(var(--_option-icon-dim) / 8);
+    top: calc(var(--_option-icon-dim) / 8);
+}
+.OpenPage .file-option.edit-option {
+    right: calc(var(--_option-icon-dim) / 8);
+    bottom: calc(var(--_option-icon-dim) / 8);
 }

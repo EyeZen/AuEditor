@@ -8,7 +8,7 @@
 .quill {
     background-color: var(--background-color);
 }
-.ql-editor { 
+.ql-container { 
     height: calc(100vh - var(--_toolbar-height) - var(--tabbar-height));
 }
 .ql-snow.ql-toolbar { 

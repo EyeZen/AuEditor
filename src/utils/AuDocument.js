@@ -17,11 +17,14 @@ class AuDocument {
 
     static WelcomeDocument = null;
     static OpenDocument = null;
+    static NewDocument = null;
+    static SpecialDocuments = [];
+    static DocumentList = "DocumentList";
 
     constructor(doc_name) {
         this.name = doc_name;
     }
-    static from({name, saved, content, isOpen, active, newDoc}) {
+    static from({ name, saved, content, isOpen, active, newDoc }) {
         const doc = new AuDocument(name);
         doc.saved = saved;
         doc.content = content;
@@ -29,6 +32,48 @@ class AuDocument {
         doc.active = active;
         doc.newDoc = newDoc;
         return doc;
+    }
+
+    static isSpecial(name) {
+        return AuDocument.SpecialDocuments.includes(name);
+    }
+
+    static getSpecial(name) {
+        switch (name) {
+            case AuDocument.NewDocument.name:
+                return AuDocument.NewDocument;
+            case AuDocument.WelcomeDocument.name:
+                return AuDocument.WelcomeDocument;
+            case AuDocument.OpenDocument.name:
+                return AuDocument.OpenDocument;
+            case AuDocument.SettingsDocument.name:
+                return AuDocument.SettingsDocument;
+            case AuDocument.AccountDocument.name:
+                return AuDocument.AccountDocument;
+            default:
+                return null;
+        }
+    }
+
+    // load saved names-list
+    static loadDocumentList() {
+        let docnamesList = window.localStorage.getItem(AuDocument.DocumentList);
+        if (docnamesList) {
+            return JSON.parse(docnamesList);
+        }
+        return [];
+    }
+
+    // overwrite saved names-list
+    static saveDocumentList(docnamesList) {
+        if (docnamesList) {
+            window.localStorage.setItem(
+                AuDocument.DocumentList,
+                JSON.stringify(docnamesList)
+            );
+            return true;
+        }
+        return false;
     }
 
     serializable() {
@@ -39,7 +84,7 @@ class AuDocument {
             isOpen: this.isOpen,
             active: this.active,
             newDoc: this.newDoc,
-        }
+        };
     }
 
     create() {
@@ -71,7 +116,7 @@ class AuDocument {
     }
 
     close() {
-        if(this.save()) {
+        if (this.save()) {
             this.isOpen = false;
             this.active = false;
             return true;
@@ -83,12 +128,21 @@ class AuDocument {
         if (!this.saved && this.content !== null && !this.newDoc) {
             window.localStorage.setItem(this.name, this.content);
             this.saved = true;
-            
-            // store.dispatch(DocList.add({ name: this.name }));
 
             return true;
         }
+        if (this.saved) return true;
         return false;
+    }
+
+    delete() {
+        if (AuDocument.isSpecial(this.name)) return false;
+        if (this.isOpen) {
+            this.close();
+        }
+        window.localStorage.removeItem(this.name);
+
+        return true;
     }
 
     setContent(new_content) {
@@ -113,11 +167,20 @@ class AuDocument {
     }
 
     rename(newName) {
-        if (this.save()) {
-            const docContent = window.localStorage.getItem(this.name);
-            if (docContent) {
-                window.localStorage.setItem(newName, docContent);
-            }
+        if (window.localStorage.getItem(newName)) return false;
+
+        console.log("Rename Processing for doc", this.serializable());
+        if (!this.save()) {
+            console.log("Failed to save old document");
+            return false;
+        }
+        console.log("Old document saved as", this.name);
+        const docContent = window.localStorage.getItem(this.name);
+        if (docContent) {
+            window.localStorage.setItem(newName, docContent);
+            console.log("Saved Old Item as new", newName);
+            window.localStorage.removeItem(this.name);
+            console.log("Removed old Item", this.name);
         }
         this.name = newName;
         return true;
@@ -126,15 +189,40 @@ class AuDocument {
 
 // Welcome Page
 AuDocument.WelcomeDocument = new AuDocument("Welcome");
-AuDocument.WelcomeDocument.create();
-AuDocument.WelcomeDocument.saved = true;
-AuDocument.WelcomeDocument.newDoc = false;
+if (AuDocument.WelcomeDocument.create()) {
+    AuDocument.WelcomeDocument.saved = true;
+    AuDocument.WelcomeDocument.newDoc = false;
+    AuDocument.SpecialDocuments.push(AuDocument.WelcomeDocument.name);
+} else console.error(`Initailisation: Failed to create WelcomeDocument`);
 
 // Open Page
 AuDocument.OpenDocument = new AuDocument("Open");
-AuDocument.OpenDocument.create();
-AuDocument.OpenDocument.saved = true;
-AuDocument.OpenDocument.newDoc = false;
-// AuDocument.OpenDocument.isOpen = false;
+if (AuDocument.OpenDocument.create()) {
+    AuDocument.OpenDocument.saved = true;
+    AuDocument.OpenDocument.newDoc = false;
+    AuDocument.SpecialDocuments.push(AuDocument.OpenDocument.name);
+} else console.error(`Initailisation: Failed to create OpenDocument`);
+
+// New Document
+AuDocument.NewDocument = new AuDocument("Untitled");
+if (AuDocument.NewDocument.create()) {
+    AuDocument.SpecialDocuments.push(AuDocument.NewDocument.name);
+} else console.error(`Initailisation: Failed to create WelcomeDocument`);
+
+// Settings Document
+AuDocument.SettingsDocument = new AuDocument("Settings");
+if (AuDocument.SettingsDocument.create()) {
+    AuDocument.SettingsDocument.saved = true;
+    AuDocument.SettingsDocument.newDoc = false;
+    AuDocument.SpecialDocuments.push(AuDocument.SettingsDocument.name);
+} else console.error(`Initailisation: Failed to create SettingsDocument`);
+
+// Account Document
+AuDocument.AccountDocument = new AuDocument("Account");
+if (AuDocument.AccountDocument.create()) {
+    AuDocument.AccountDocument.saved = true;
+    AuDocument.AccountDocument.newDoc = false;
+    AuDocument.SpecialDocuments.push(AuDocument.AccountDocument.name);
+} else console.error(`Initailisation: Failed to create AccountDocument`);
 
 export default AuDocument;

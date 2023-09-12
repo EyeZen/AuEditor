@@ -1,0 +1,181 @@
+.SettingsPage {
+    flex: 1;
+    background-color: var(--background-color);
+    padding-top: 4vh;
+}
+.SettingsPage .settings-wrapper {
+    width: 50%;
+    max-height: 80vh;
+    margin-inline: auto;
+    overflow: hidden;
+    border-radius: 10px;
+    padding-bottom: 1em;
+    background-color: var(--background-color-light);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.606);
+}
+.SettingsPage main {
+    width: calc(100% + 18px);
+    height: 80vh;
+    background-color: var(--background-color-light);
+    border-radius: 10px;
+    overflow: hidden;
+    overflow-y: auto;
+}
+
+.SettingsPage header {
+    display: flex;
+    align-items: center;
+    background-color: var(--background-color-dark);
+    padding: 0.5em 1em;
+    gap: 1em;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.606);
+}
+
+.SettingsPage .settings-pane {
+    margin: 1em;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.SettingsPage .settings-pane h1 {
+    width: 100%;
+    font-size: 18px;
+    padding-block: 0.5em;
+    background-color: var(--background-color);
+    text-align: center;
+    border-radius: 5px;
+    margin-top: 2em;
+    margin-bottom: 0.5em;
+}
+.SettingsPage .settings-pane label {
+    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    padding-block: 0.2em;
+    cursor: pointer;
+    margin-block: 1.5em;
+}
+.SettingsPage .settings-pane span {
+    width: 100px;
+}
+
+.SettingsPage .settings-pane select {
+    background: none;
+    border: none;
+    background-color: var(--background-color-dark);
+    color: var(--text-color);
+    font-size: 0.9em;
+    padding: 0.2em 0.2em;
+    &:focus {
+        outline: none;
+        filter: brightness(1.2);
+    }
+}
+
+.SettingsPage .settings-pane input[type="checkbox"] {
+    position: relative;
+    margin-inline-start: 0.5em;
+    cursor: pointer;
+
+    &::before, &::after {
+        transition: all 200ms ease-in-out;
+    }
+
+    &::before {
+        content: "";
+        display: inline-block;
+        width: 2.2em;
+        height: 1.2em;
+        background-color: var(--background-color);
+        border-radius: 10px;
+        position: absolute;
+        left: -0.6em;
+        top: -0.1em;
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.544);
+    }
+
+    &::after {
+        content: "";
+        display: inline-block;
+        width: 1.2em;
+        height: 1.2em;
+        background-color: var(--background-color-light);
+        border-radius: 50%;
+        position: absolute;
+        top: -0.1em;
+        left: -0.6em;
+    }
+
+    &:checked {
+        filter: brightness(1.2);
+        &::before {
+            box-shadow: 0 0 2px rgba(255, 255, 255, 0.431);
+        }
+        &::after {
+            left: 0.4em;
+        }
+    }
+}
+.SettingsPage .settings-pane input[type="color"] {
+    background: none;
+    border: none;
+    width: 25px;
+    cursor: pointer;
+}
+.SettingsPage .settings-pane > *:not(h1) {
+    margin-inline: 0.5em;
+}
+
+.SettingsPage .settings-sub-pane {
+    width: 40%;
+    background-color: var(--background-color);
+    padding-bottom: 1em;
+    margin-block: 1em;
+    overflow: hidden;
+    border-radius: 5px;
+}
+.SettingsPage .settings-sub-pane > *:not(h2) {
+    margin-inline: 1em;
+}
+.SettingsPage .settings-pane h2 {
+    font-size: 14px;
+    font-weight: 400;
+    background-color: var(--background-color-dark);
+    /* margin: 0.5em; */
+    margin-bottom: 1em;
+    padding: 0.5em;
+}
+
+.SettingsPage .settings-pane .theme-select {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-inline: 2em;
+}
+.SettingsPage button {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    padding: 0.8em 1em;
+    cursor: pointer;
+
+    &:hover {
+        background-color: var(--background-color-dark);
+    }
+    &:active {
+        filter: brightness(1.2);
+    }
+}
+
+.SettingsPage footer {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-inline: 2em;
+    margin-block: 3em;
+}

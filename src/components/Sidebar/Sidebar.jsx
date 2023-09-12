@@ -1,9 +1,10 @@
 import { Component } from "react";
-import { actions as AuDocumentActions } from "../../state/slices/openDocuments";
-import doneIcon from "../../assets/done.svg";
+import { actions as AuDocumentActions } from "../../state/slices/documents";
 import addIcon from "../../assets/add.svg";
 import saveIcon from "../../assets/save.svg";
 import openIcon from "../../assets/open.svg";
+import settingsIcon from "../../assets/settings.svg";
+import accountIcon from "../../assets/account.svg";
 import IconButton from "../IconButton/IconButton";
 import "./Sidebar.css";
 import { connect } from "react-redux";
@@ -25,8 +26,18 @@ class Sidebar extends Component {
             },
             {
                 icon: openIcon,
-                onClick: this.openCommandHandler.bind(this),
+                onClick: this.openCommandHandler.bind(this, AuDocument.OpenDocument.name),
                 tooltip: "Open Document",
+            },
+            {
+                icon: settingsIcon,
+                onClick: this.openCommandHandler.bind(this, AuDocument.SettingsDocument.name),
+                tooltip: "Settings",
+            },
+            {
+                icon: accountIcon,
+                onClick: this.openCommandHandler.bind(this, AuDocument.AccountDocument.name),
+                tooltip: "Account",
             },
         ];
     }
@@ -83,27 +94,38 @@ class Sidebar extends Component {
         );
     }
 
-    openCommandHandler() {
-        this.props.open(AuDocument.OpenDocument.name);
+    openCommandHandler(docname) {
+        this.props.open(docname);
     }
 
     saveCommandHandler() {
-
+        const idx = this.props.openDocuments.findIndex(doc => doc.active);
+        if(idx < 0) {
+            console.log("No active document! Cannot save");
+            return;
+        }
+        const doc = this.props.openDocuments[idx];
+        this.props.save(doc.name);
     }
 
     newCommandHandler() {
         this.props.create();
     }
+
+    
 }
 
-function mapStateToProps() {
-    return {};
+function mapStateToProps(state) {
+    return {
+        openDocuments: state.documents.openList,
+    };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         create: () => dispatch(AuDocumentActions.create()),
         open: (name) => dispatch(AuDocumentActions.open({name})),
+        save: (name) => dispatch(AuDocumentActions.save({ name })),
     }
 }
 
