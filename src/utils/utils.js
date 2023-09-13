@@ -9,6 +9,7 @@ import mdIcon from "../assets/filetypes/md.svg";
 import welcomeIcon from "../assets/filetypes/special/welcome.svg";
 import openIcon from "../assets/filetypes/special/open.svg";
 import untitledIcon from "../assets/filetypes/special/untitled.svg";
+import aboutIcon from "../assets/about.svg";
 
 import AuDocument from "./AuDocument";
 
@@ -17,6 +18,7 @@ export class FileIcons {
         [AuDocument.WelcomeDocument.name.toLowerCase()]: welcomeIcon,
         [AuDocument.OpenDocument.name.toLowerCase()]: openIcon,
         [AuDocument.NewDocument.name.toLowerCase()]: untitledIcon,
+        [AuDocument.AboutDocument.name.toLowerCase()]: aboutIcon,
 
         default: docIcon,
         c: cIcon,

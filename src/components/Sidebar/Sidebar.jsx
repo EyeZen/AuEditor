@@ -31,16 +31,6 @@ class Sidebar extends Component {
                 tooltip: "Open Document",
             },
             {
-                icon: settingsIcon,
-                onClick: this.openCommandHandler.bind(this, AuDocument.SettingsDocument.name),
-                tooltip: "Settings",
-            },
-            {
-                icon: accountIcon,
-                onClick: this.openCommandHandler.bind(this, AuDocument.AccountDocument.name),
-                tooltip: "Account",
-            },
-            {
                 icon: aboutIcon,
                 onClick: this.openCommandHandler.bind(this, AuDocument.AboutDocument.name),
                 tooltip: "About",

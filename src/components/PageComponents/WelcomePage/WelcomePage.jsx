@@ -116,7 +116,6 @@ class WelcomePage extends Component {
     }
 
     resetHandler() {
-        window.alert("Dispatching Reset");
         this.props.reset();
     }
 

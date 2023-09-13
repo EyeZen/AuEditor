@@ -211,7 +211,6 @@ class AuDocument {
 
         // delete special-docs
         for (let doc of AuDocument.SpecialDocuments) {
-            window.alert(`Deleting Special: ${doc.name}`);
             window.localStorage.removeItem(doc.name);
         }
 
