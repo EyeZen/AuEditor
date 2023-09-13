@@ -345,6 +345,10 @@ const documentsSlice = createSlice({
                 savedList: newSavedList,
             };
         },
+
+        reset() {
+            AuDocument.reset();
+        }
     },
 });
 

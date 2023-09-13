@@ -1,5 +1,6 @@
 .Tabbar {
-    height: var(--tabbar-height);
+    /* height: var(--tabbar-height); */
+    overflow-x: auto;
     background-color: var(--background-color-dark);
     display: flex;
     font-size: 0.8rem;

@@ -52,3 +52,10 @@
         filter: hue-rotate(180deg);
     }
 }
+
+/* Small Screen */
+@media only screen and (max-width: 768px) {
+    .WelcomePage main {
+        flex-direction: column;
+    }
+}

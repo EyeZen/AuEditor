@@ -21,10 +21,14 @@
 
 @media only screen and (max-width: 768px) {
     .Sidebar {
-        width: 100vw;
-        height: var(--_sidebar-dim);
+        width: 100%;
+        /* width: 100vw; */
+        /* height: var(--_sidebar-dim); */
     }
     .options {
         flex-direction: row;
+    }
+    .Sidebar .tooltip {
+        transform: translate(calc(-50% - 25px), -110%);
     }
 }

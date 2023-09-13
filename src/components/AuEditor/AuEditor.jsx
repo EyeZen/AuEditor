@@ -43,9 +43,7 @@ class AuEditor extends Component {
     }
 
     componentDidUpdate() {
-        const doc = this.props.openDocuments.filter(
-            (doc) => doc.active === true
-        )[0];
+        const doc = this.props.openDocuments.filter((doc) => doc.active)[0];
         if (
             this.state.name !== doc.name ||
             this.state.content !== doc.content

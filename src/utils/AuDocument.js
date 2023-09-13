@@ -125,7 +125,7 @@ class AuDocument {
     }
 
     save() {
-        if (!this.saved && this.content !== null && !this.newDoc) {
+        if (!AuDocument.isSpecial(this.name) && !this.saved && this.content !== null && !this.newDoc) {
             window.localStorage.setItem(this.name, this.content);
             this.saved = true;
 
@@ -185,6 +185,23 @@ class AuDocument {
         this.name = newName;
         return true;
     }
+
+    static reset() {
+        // delete all saved documents
+        for(let name of this.loadDocumentList()) {
+            window.localStorage.removeItem(name);
+        } 
+        // delete document-list
+        window.localStorage.removeItem(AuDocument.DocumentList);
+
+        // delete special-docs
+        for(let name of AuDocument.SpecialDocuments) {
+            window.alert(`Deleting Special: ${name}`);
+            window.localStorage.removeItem(name);
+        }
+
+        window.location.reload();
+    }
 }
 
 // Welcome Page
@@ -192,37 +209,37 @@ AuDocument.WelcomeDocument = new AuDocument("Welcome");
 if (AuDocument.WelcomeDocument.create()) {
     AuDocument.WelcomeDocument.saved = true;
     AuDocument.WelcomeDocument.newDoc = false;
-    AuDocument.SpecialDocuments.push(AuDocument.WelcomeDocument.name);
 } else console.error(`Initailisation: Failed to create WelcomeDocument`);
+AuDocument.SpecialDocuments.push(AuDocument.WelcomeDocument.name);
 
 // Open Page
 AuDocument.OpenDocument = new AuDocument("Open");
 if (AuDocument.OpenDocument.create()) {
     AuDocument.OpenDocument.saved = true;
     AuDocument.OpenDocument.newDoc = false;
-    AuDocument.SpecialDocuments.push(AuDocument.OpenDocument.name);
 } else console.error(`Initailisation: Failed to create OpenDocument`);
+AuDocument.SpecialDocuments.push(AuDocument.OpenDocument.name);
 
 // New Document
 AuDocument.NewDocument = new AuDocument("Untitled");
 if (AuDocument.NewDocument.create()) {
-    AuDocument.SpecialDocuments.push(AuDocument.NewDocument.name);
-} else console.error(`Initailisation: Failed to create WelcomeDocument`);
+} else console.error(`Initailisation: Failed to create NewDocument`);
+AuDocument.SpecialDocuments.push(AuDocument.NewDocument.name);
 
 // Settings Document
 AuDocument.SettingsDocument = new AuDocument("Settings");
 if (AuDocument.SettingsDocument.create()) {
     AuDocument.SettingsDocument.saved = true;
     AuDocument.SettingsDocument.newDoc = false;
-    AuDocument.SpecialDocuments.push(AuDocument.SettingsDocument.name);
 } else console.error(`Initailisation: Failed to create SettingsDocument`);
+AuDocument.SpecialDocuments.push(AuDocument.SettingsDocument.name);
 
 // Account Document
 AuDocument.AccountDocument = new AuDocument("Account");
 if (AuDocument.AccountDocument.create()) {
     AuDocument.AccountDocument.saved = true;
     AuDocument.AccountDocument.newDoc = false;
-    AuDocument.SpecialDocuments.push(AuDocument.AccountDocument.name);
 } else console.error(`Initailisation: Failed to create AccountDocument`);
+AuDocument.SpecialDocuments.push(AuDocument.AccountDocument.name);
 
 export default AuDocument;
