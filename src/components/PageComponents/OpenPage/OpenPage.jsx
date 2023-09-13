@@ -33,8 +33,8 @@ class OpenPage extends Component {
                 ref: React.createRef(null),
                 handler: echo,
             },
-            docslist: this.props.docslist.map((filename) => ({
-                filename,
+            docslist: this.props.docslist.map((doc) => ({
+                ...doc,
                 selected: false,
             })),
         };
@@ -42,33 +42,35 @@ class OpenPage extends Component {
 
     componentDidUpdate() {
         const globalDoclist = this.state.searchbarValue
-            ? this.props.docslist.filter((docname) =>
-                  docname.includes(this.state.searchbarValue)
+            ? this.props.docslist.filter((doc) =>
+                  doc.name.includes(this.state.searchbarValue)
               )
             : this.props.docslist;
 
         const updatesAvailable =
             globalDoclist.length !== this.state.docslist.length ||
             globalDoclist.some(
-                (filename) =>
+                (globalDoc) =>
                     this.state.docslist.findIndex(
-                        (doc) => doc.filename === filename
+                        (doc) => doc.name === globalDoc.name
                     ) < 0
             );
 
         if (updatesAvailable) {
-            const docslist = globalDoclist.map((filename) => {
+            const docslist = globalDoclist.map((globalDoc) => {
                 let idx = this.state.docslist.findIndex(
-                    (doc) => doc.filename === filename
+                    (doc) => doc.name === globalDoc.name
                 );
                 if (idx < 0) {
                     // add new item to list
-                    return { filename, selected: false };
+                    return { ...globalDoc, selected: false };
                 }
+                // atleast a partial-match is present
                 return {
                     // keep settings for not-udpated items
-                    ...this.state.docslist[idx],
-                    filename,
+                    ...this.state.docslist[idx],    // could contain settings local and maintained by this component
+                    // overwrite the updated items/settings
+                    ...globalDoc                    // could contain new global settings added to the document, or old settings that have updated
                 };
             });
             this.setState({ docslist });
@@ -133,7 +135,7 @@ class OpenPage extends Component {
 
                 {/* Saved Documents List */}
                 <ul className="docs-list">
-                    {this.state.docslist.map(({ filename, selected }) => (
+                    {this.state.docslist.map(({ name: filename, selected }) => (
                         <div className="file-wrapper" key={filename}>
                             {/* options */}
                             <img
@@ -243,7 +245,7 @@ class OpenPage extends Component {
 
     fileSelectHandler(filename) {
         let updatedDocslist = this.state.docslist.map((doc) => {
-            if (doc.filename === filename) {
+            if (doc.name === filename) {
                 doc.selected = !doc.selected;
             }
             return doc;
@@ -288,7 +290,7 @@ class OpenPage extends Component {
         if (confirmationOption === this.state.confirmationPrompt.options.Yes) {
             this.state.docslist
                 .filter((doc) => doc.selected)
-                .forEach((doc) => this.props.delete(doc.filename));
+                .forEach((doc) => this.props.delete(doc.name));
         }
         this.closeConfirmation();
     }

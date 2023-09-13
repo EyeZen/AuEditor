@@ -1,5 +1,5 @@
 .Tabbar {
-    /* height: var(--tabbar-height); */
+    height: var(--tabbar-height);
     overflow-x: auto;
     background-color: var(--background-color-dark);
     display: flex;
@@ -50,5 +50,11 @@ input.tab-name {
     border: 1px solid var(--border-color);
     &:focus {
         outline: none;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .tab .IconButton {
+        visibility: visible;
     }
 }

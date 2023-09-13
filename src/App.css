@@ -1,10 +1,19 @@
 .app {    
     display: flex;
+    color: var(--text-color);
 }
 
 main {
     flex: 1;
-    /* height: 100vh; */
+    height: var(--main-panel-height);
+}
+
+.pages-container {
+    height: calc(var(--main-panel-height) - var(--tabbar-height));
+    overflow-y: auto;
+}
+.pages-container > * {
+    min-height: 100%;
 }
 
 @media only screen and (max-width: 768px) {

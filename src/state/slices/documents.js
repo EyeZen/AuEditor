@@ -14,7 +14,7 @@ const documentsSlice = createSlice({
 
         create: (state, { type }) => {
             const { openList } = state;
-            let newDocIdx = openList.findIndex((doc) => doc.newDoc);
+            let newDocIdx = openList.findIndex((doc) => doc.newDoc || doc.name === AuDocument.NewDocument.name);
             if (newDocIdx >= 0) {
                 console.error(`${type}: Document Already Exists!`);
                 return state;
@@ -22,7 +22,7 @@ const documentsSlice = createSlice({
             // create new document
             let newDoc = AuDocument.NewDocument;
             // deselect all other tabs
-            let newOpenList = openList.map(doc => {
+            let newOpenList = openList.map((doc) => {
                 const auDoc = AuDocument.from(doc);
                 auDoc.deselect();
                 return auDoc.serializable();
@@ -37,7 +37,7 @@ const documentsSlice = createSlice({
         open: (state, { type, payload }) => {
             const { name } = payload;
 
-            if(!name) {
+            if (!name) {
                 console.error(`${type}: Invalid Document:`, name);
                 return state;
             }
@@ -63,7 +63,7 @@ const documentsSlice = createSlice({
             }
             // OpenDialog is being opened
             // else if (name === AuDocument.OpenDocument.name) {
-            else if (AuDocument.SpecialDocuments.filter(doc => !doc.newDoc).includes(name)) {
+            else if (AuDocument.isSpecial(name, true)) {
                 // deselect all other tabs
                 let newOpenList = openList.map((doc) => {
                     let auDoc = AuDocument.from(doc);
@@ -159,28 +159,30 @@ const documentsSlice = createSlice({
             const { name, newName } = payload;
             const { openList, savedList } = state;
             // Invalid Renaming: cannot rename to same name
-            if(name === newName) return state;
-            else if(name === AuDocument.NewDocument.name) {
+            if (name === newName) return state;
+            else if (name === AuDocument.NewDocument.name) {
                 // In-memory Renaming: Does not touch anything in persistent storage
-                const idx = openList.findIndex(doc => doc.name === name);
-                if(idx < 0) {
+                const idx = openList.findIndex((doc) => doc.name === name);
+                if (idx < 0) {
                     console.error(`${type}: Document Doesn't Exist: ${name}`);
                     return state;
                 }
-                
-                if(openList.findIndex(doc => doc.name === newName) >= 0) {
-                    console.error(`${type}: Document Already Exists: ${newName}`);
+
+                if (openList.findIndex((doc) => doc.name === newName) >= 0) {
+                    console.error(
+                        `${type}: Document Already Exists: ${newName}`
+                    );
                     return state;
                 }
 
                 openList[idx].name = newName;
+                openList[idx].newDoc = false;
                 return state;
             }
             // cannot set name to already-existing-document's name
             else if (
-                [AuDocument.SpecialDocuments, ...savedList].some(
-                    (doc) => doc.name === newName
-                )
+                AuDocument.isSpecial(newName) ||
+                savedList.some((doc) => doc.name === newName)
             ) {
                 console.error("Cannot rename from `", name, "' to:", newName);
                 return state;
@@ -188,13 +190,13 @@ const documentsSlice = createSlice({
 
             // open document to rename
             let auDoc = new AuDocument(name);
-            if(!auDoc.open()) {
+            if (!auDoc.open()) {
                 console.error(`Renaming Error: ${name} does not exist!`);
                 return state;
             }
 
             // rename to newName
-            if(!auDoc.rename(newName)) {
+            if (!auDoc.rename(newName)) {
                 console.error(`Failed to rename ${name} to ${newName}!`);
                 return state;
             }
@@ -208,11 +210,11 @@ const documentsSlice = createSlice({
             });
 
             // update saved-list
-            let newSavedList = state.savedList.map((docname) => {
-                if (docname === name) {
-                    return newName;
+            let newSavedList = state.savedList.map((doc) => {
+                if (doc.name === name) {
+                    doc.name = newName;
                 }
-                return docname;
+                return doc;
             });
             AuDocument.saveDocumentList([...newSavedList]);
 
@@ -265,9 +267,9 @@ const documentsSlice = createSlice({
 
                 // add saved document to saved-list, if not already there
                 if (
-                    state.savedList.findIndex((docName) => docName === name) < 0
+                    state.savedList.findIndex((doc) => doc.name === name) < 0
                 ) {
-                    state.savedList.push(name);
+                    state.savedList.push({name, updatedAt: auDoc.updatedAt });
                     // TODO: debounce call
                     AuDocument.saveDocumentList([...state.savedList]);
                 }
@@ -279,28 +281,36 @@ const documentsSlice = createSlice({
             const { name } = payload;
 
             // A special-purpose document is not deletable!
-            if(AuDocument.isSpecial(name)) {
-                console.error(`${type}: Cannot delete special document: ${name}`);
+            if (AuDocument.isSpecial(name)) {
+                console.error(
+                    `${type}: Cannot delete special document: ${name}`
+                );
                 return state;
             }
 
             // The document must exist with the name provided
-            const idx = state.savedList.findIndex(docname => docname === name);
-            if(idx < 0) {
+            const idx = state.savedList.findIndex(
+                (doc) => doc.name === name
+            );
+            if (idx < 0) {
                 console.error(`${type}: Document doesn't exist: ${name}`);
                 return state;
             }
 
             // delete document
             const auDoc = new AuDocument(name);
-            if(!auDoc.delete()) {
+            if (!auDoc.delete()) {
                 console.error(`${type}: Failed to delete ${name}`);
                 return state;
             }
 
             // update state
-            const newOpenList = state.openList.filter(doc => doc.name !== name);
-            const newSavedList = state.savedList.filter(docname => docname !== name);
+            const newOpenList = state.openList.filter(
+                (doc) => doc.name !== name
+            );
+            const newSavedList = state.savedList.filter(
+                (doc) => doc.name !== name
+            );
             AuDocument.saveDocumentList([...newSavedList]);
 
             return {
@@ -314,41 +324,41 @@ const documentsSlice = createSlice({
          * savedList
          */
 
-        add: (state, { type, payload }) => {
-            const { name } = payload;
-            if (
-                name &&
-                state.savedList.findIndex((docName) => docName === name) < 0
-            ) {
-                state.savedList.push(name);
-                AuDocument.saveDocumentList([...state.savedList]);
-                return state;
-            }
-            console.error("Failed to add", name, "to documents-list!");
+        // add: (state, { type, payload }) => {
+        //     const { name } = payload;
+        //     if (
+        //         name &&
+        //         state.savedList.findIndex((doc) => doc.name === name) < 0
+        //     ) {
+        //         state.savedList.push(name);
+        //         AuDocument.saveDocumentList([...state.savedList]);
+        //         return state;
+        //     }
+        //     console.error("Failed to add", name, "to documents-list!");
 
-            return state;
-        },
+        //     return state;
+        // },
 
-        remove: (state, { type, payload }) => {
-            const { name } = payload;
-            let idx = state.savedList.findIndex((docName) => docName === name);
-            if (idx < 0) {
-                console.error("Failed to remove", name, "from documents-list!");
-                return state;
-            }
-            let newSavedList = state.savedList.filter(
-                (docName) => docName === name
-            );
-            AuDocument.saveDocumentList([...newSavedList]);
-            return {
-                ...state,
-                savedList: newSavedList,
-            };
-        },
+        // remove: (state, { type, payload }) => {
+        //     const { name } = payload;
+        //     let idx = state.savedList.findIndex((docName) => docName === name);
+        //     if (idx < 0) {
+        //         console.error("Failed to remove", name, "from documents-list!");
+        //         return state;
+        //     }
+        //     let newSavedList = state.savedList.filter(
+        //         (docName) => docName === name
+        //     );
+        //     AuDocument.saveDocumentList([...newSavedList]);
+        //     return {
+        //         ...state,
+        //         savedList: newSavedList,
+        //     };
+        // },
 
         reset() {
             AuDocument.reset();
-        }
+        },
     },
 });
 

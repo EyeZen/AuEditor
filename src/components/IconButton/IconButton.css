@@ -21,6 +21,11 @@
     &:active {
         background-color: #50577A;
     }
+    &:disabled {
+        opacity: 0.8;
+        background-color: #50577A;
+        cursor: not-allowed;
+    }
 }
 
 .IconButton img {
@@ -48,3 +53,7 @@
     justify-content: center;
     align-items: center;
 }
+
+/* .IconButton:disabled .tooltip {
+    display: none;
+} */

@@ -13,7 +13,15 @@ body {
 }
 
 :root {
+  --editor-height: 100vh;
   --tabbar-height: 30px;
+  --sidebar-dim: 45px;
+  --quill-toolbar-height: 43px;
+
+  --main-panel-height: var(--editor-height);
+  --quill-editor-height: calc(var(--main-panel-height) - var(--tabbar-height) - var(--quill-toolbar-height) - 1em);
+
+  --icons-dim: 40px;
 
   /* COLOR THEME */
   --background-color: #474E68;
@@ -32,4 +40,10 @@ body {
 .vertical-stack {
   display: flex;
   flex-direction: column;
+}
+
+@media only screen and (max-width: 768px) {
+  :root {
+    --main-panel-height: calc(var(--editor-height) - var(--sidebar-dim));
+  }
 }

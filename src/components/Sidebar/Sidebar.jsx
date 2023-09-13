@@ -5,6 +5,7 @@ import saveIcon from "../../assets/save.svg";
 import openIcon from "../../assets/open.svg";
 import settingsIcon from "../../assets/settings.svg";
 import accountIcon from "../../assets/account.svg";
+import aboutIcon from "../../assets/about.svg";
 import IconButton from "../IconButton/IconButton";
 import "./Sidebar.css";
 import { connect } from "react-redux";
@@ -39,45 +40,16 @@ class Sidebar extends Component {
                 onClick: this.openCommandHandler.bind(this, AuDocument.AccountDocument.name),
                 tooltip: "Account",
             },
+            {
+                icon: aboutIcon,
+                onClick: this.openCommandHandler.bind(this, AuDocument.AboutDocument.name),
+                tooltip: "About",
+            },
         ];
     }
 
-    componentDidMount() {
-        document.addEventListener("keydown", ev => {
-            switch(ev.key) {
-                case 'o': {
-                    if(ev.ctrlKey) {
-                        ev.preventDefault();
-                        console.log("Open Document Command");
-                    }
-                }
-                break;
-                case 's': {
-                    if(ev.ctrlKey) {
-                        ev.preventDefault();
-                        console.log("Save Document Command");
-                    }
-                }
-                break;
-                case 'm': {
-                    if(ev.ctrlKey) {
-                        ev.preventDefault();
-                        console.log("New Document Command");
-                    }
-                }
-                break;
-                case 'w': {
-                    if(ev.ctrlKey) {
-                        ev.preventDefault();
-                        console.log("Close Document Command");
-                    }
-                }
-                break;
-            }
-        })
-    }
-
     render() {
+        const specialDocActive = AuDocument.isSpecial(this.props.openDocuments.filter(doc => doc.active)[0].name);
         return (
             <aside className="Sidebar">
                 <div className="options">
@@ -87,6 +59,7 @@ class Sidebar extends Component {
                             icon={icon}
                             onClick={onClick}
                             tooltip={tooltip}
+                            disabled={tooltip.toLowerCase().includes("save") && specialDocActive}
                         />
                     ))}
                 </div>

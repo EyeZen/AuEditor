@@ -7,7 +7,7 @@
     --_option-icon-dim: 25px;
     --_option-icon-half_dim: calc(var(--_option-icon-dim) / 2);
 
-    flex: 1;
+    /* flex: 1; */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -118,7 +118,7 @@
     aspect-ratio: 1;
 }
 .OpenPage .empty p {
-    font-size: 2rem;
+    font-size: 5vmin;
     text-align: center;
 }
 

@@ -87,8 +87,7 @@ class Tabbar extends Component {
                         className={
                             "tab" +
                             (doc.active ? " active-tab" : "") +
-                            (doc.newDoc ||
-                            AuDocument.SpecialDocuments.includes(doc.name)
+                            (doc.newDoc || AuDocument.isSpecial(doc.name)
                                 ? " default-tab"
                                 : "")
                         }
@@ -129,15 +128,9 @@ class Tabbar extends Component {
                             <span
                                 className="tab-name"
                                 onDoubleClick={() => {
-                                    if (
-                                        AuDocument.SpecialDocuments.filter(
-                                            (docname) =>
-                                                docname !==
-                                                AuDocument.NewDocument.name
-                                        ).includes(doc.name)
-                                    )
+                                    if (AuDocument.isSpecial(doc.name, true)) {
                                         return;
-
+                                    }
                                     doc.renameState = true;
                                     this.setState({
                                         renameValue: doc.name,

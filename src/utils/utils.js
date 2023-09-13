@@ -14,9 +14,9 @@ import AuDocument from "./AuDocument";
 
 export class FileIcons {
     static iconsList = {
-        welcome: welcomeIcon,
-        open: openIcon,
-        untitled: untitledIcon,
+        [AuDocument.WelcomeDocument.name.toLowerCase()]: welcomeIcon,
+        [AuDocument.OpenDocument.name.toLowerCase()]: openIcon,
+        [AuDocument.NewDocument.name.toLowerCase()]: untitledIcon,
 
         default: docIcon,
         c: cIcon,
@@ -36,7 +36,7 @@ export class FileIcons {
         const extensionIdx = filename.lastIndexOf(".");
         // filname doesn't have an extension
         if(extensionIdx < 0) {
-            if(AuDocument.SpecialDocuments.includes(filename)) {
+            if(AuDocument.isSpecial(filename)) {
                 return FileIcons.iconsList[filename.toLowerCase()];
             }
             return FileIcons.iconsList.default;
@@ -61,16 +61,16 @@ export function debounce(func, timeoutPeriod = 2000) {
     return (...params) => {
         if (!timeoutRef) {
             // if function not called yet
-            console.log("func: scheduled");
+            // console.log("func: scheduled");
             timeoutRef = setTimeout(() => {
                 // schedule a call
-                console.log("func: called");
+                // console.log("func: called");
                 func(...params);
                 timeoutRef = null;
             }, timeoutPeriod);
         } else {
             // if function is already scheduled for a call, which hasn't happend yet
-            console.log("func: rescheduled");
+            // console.log("func: rescheduled");
             clearTimeout(timeoutRef); // reschedule the call
             timeoutRef = setTimeout(() => func(...params), timeoutPeriod);
         }

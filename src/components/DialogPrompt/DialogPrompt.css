@@ -11,7 +11,7 @@
     color: var(--text-color);
 }
 .DialogPrompt {
-    width: 300px;
+    max-width: 300px;
     min-height: 100px;
     display: flex;
     flex-direction: column;
@@ -33,6 +33,7 @@
     margin-top: auto;
     padding-top: 1em;
     flex-direction: row;
+    flex-wrap: wrap;
 }
 .DialogPrompt .options button {
     flex: 1;

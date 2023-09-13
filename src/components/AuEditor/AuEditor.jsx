@@ -1,15 +1,10 @@
 import ReactQuill from "react-quill";
 import "quill/dist/quill.snow.css";
 import React, { Component } from "react";
-import WelcomePage from "./WelcomePage/WelcomePage";
-import OpenPage from "./OpenPage/OpenPage";
-import SettingsPage from "./SettingsPage/SettingsPage";
-import AccountPage from "./AccountPage/AccountPage";
 import "./AuEditor.css";
 
 import { actions as AuDocumentActions } from "../../state/slices/documents";
 import { connect } from "react-redux";
-import AuDocument from "../../utils/AuDocument";
 import { debounce } from "../../utils/utils";
 
 class AuEditor extends Component {
@@ -19,17 +14,17 @@ class AuEditor extends Component {
     punctuations = /[.?!,;:&'"<>{}[\]]/;
 
     parser = new DOMParser();
-    quillRef = React.createRef(null);
-    docRef = React.createRef(null);
+    quillRef = React.createRef("");
 
     constructor(props) {
         super(props);
         this.props = props;
-        // const { openDocuments } = this.props;
         this.state = {
             name: "",
             content: "",
         };
+
+        this.setContent = debounce(this.props.setContent.bind(this), 500);
     }
 
     componentDidMount() {
@@ -42,82 +37,42 @@ class AuEditor extends Component {
         });
     }
 
-    componentDidUpdate() {
-        const doc = this.props.openDocuments.filter((doc) => doc.active)[0];
-        if (
-            this.state.name !== doc.name ||
-            this.state.content !== doc.content
-        ) {
-            this.setState({
-                name: doc.name,
-                content: doc.content,
-            });
-        }
-    }
-
     render() {
-        // this.docRef.current = this.props.openDocuments.filter(doc => doc.active === true)[0];
-        // console.log("AuEditor: render: doc: ", this.docRef.current);
         return (
-            <div className="editor vertical-stack">
-                {this.state.name === AuDocument.WelcomeDocument.name ? (
-                    <WelcomePage />
-                ) : this.state.name === AuDocument.OpenDocument.name ? (
-                    <OpenPage
-                        onOpen={(file) => console.log("Opening file:", file)}
-                    />
-                ) : this.state.name === AuDocument.SettingsDocument.name ? (
-                    <SettingsPage />
-                ) : this.state.name === AuDocument.AccountDocument.name ? (
-                    <AccountPage />
-                ) : (
-                    <ReactQuill
-                        ref={this.quillRef}
-                        theme="snow"
-                        value={this.state.content}
-                        onChange={debounce(
-                            this.contentChangeHandler.bind(this),
-                            1000
-                        )}
-                    />
-                )}
-            </div>
+            <ReactQuill
+                ref={this.quillRef}
+                theme="snow"
+                value={this.state.content}
+                onChange={(content) => {
+                    this.setState({ content });
+                    this.setContent(this.state.name, content);
+                }}
+            />
         );
     }
 
-    contentChangeHandler(content) {
-        let newContent = content;
-        if (this.props.settings.translate.enabled) {
-            newContent = this.transform(content);
-        }
-
-        this.setState({
-            content: newContent,
-        });
-        this.props.setContent(this.state.name, newContent);
+    componentWillUnmount() {
+        this.props.setContent(this.state.name, this.state.content);
     }
 
-    async translate(sentence) {
-        // if (!this.english_text.test(sentence)) return sentence;
-        console.log("fumbling:", sentence);
-        let result = sentence;
-        try {
-            const res = await fetch("http://localhost:5000/translate", {
-                method: "POST",
-                body: JSON.stringify({
-                    q: sentence,
-                    source: "en",
-                    target: "ja",
-                    format: "text",
-                    api_key: "",
-                }),
-                headers: { "Content-Type": "application/json" },
+    contentChangeHandler(content) {
+        if (this.settings.translate.enabled) {
+            this.transform(content).then((newContent) => {
+                this.setState({
+                    content: newContent,
+                });
+                this.setContent(this.state.name, newContent);
+
+                const quill = this.quillRef.current.getEditor();
+                setTimeout(
+                    () =>
+                        quill.setSelection(quill.getSelection().index + 10, 0),
+                    0
+                );
             });
-            result = (await res.json()).translatedText;
-        } catch (err) {
-            console.log("Error translating: ", err);
+        } else {
+
         }
-        return result;
     }
 
     async transform(editorText) {
@@ -125,7 +80,12 @@ class AuEditor extends Component {
             editorText,
             "text/html"
         ).body;
-        let parsedHTML = await this.parseText(editorHTML);
+        let parsedHTML = null;
+        if (this.props.settings.translate.enabled) {
+            parsedHTML = await this.parseText(editorHTML);
+        } else {
+            parsedHTML = editorHTML;
+        }
         console.log("Transformed:", parsedHTML.innerHTML, parsedHTML);
         const newContent = parsedHTML.innerHTML;
         return newContent;
@@ -166,6 +126,29 @@ class AuEditor extends Component {
         return node;
     }
 
+    async translate(sentence) {
+        // if (!this.english_text.test(sentence)) return sentence;
+        console.log("fumbling:", sentence);
+        let result = sentence;
+        try {
+            const res = await fetch("http://localhost:5000/translate", {
+                method: "POST",
+                body: JSON.stringify({
+                    q: sentence,
+                    source: "en",
+                    target: "ja",
+                    format: "text",
+                    api_key: "",
+                }),
+                headers: { "Content-Type": "application/json" },
+            });
+            result = (await res.json()).translatedText;
+        } catch (err) {
+            console.log("Error translating: ", err);
+        }
+        return result;
+    }
+
     langSplit(text) {
         let match = null;
         let textArray = [];
@@ -190,8 +173,6 @@ function mapDispatchToProps(dispatch) {
     return {
         setContent: (name, content) =>
             dispatch(AuDocumentActions.setContent({ name, content })),
-        // open: (doc) => dispatch(AuDocumentActions.open(doc)),
-        // close: (doc) => dispatch(AuDocumentActions.close(doc)),
     };
 }
 

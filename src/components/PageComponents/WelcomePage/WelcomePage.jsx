@@ -1,4 +1,4 @@
-import { Component } from "react";
+import React, { Component } from "react";
 import addIcon from "../../../assets/add.svg";
 import openIcon from "../../../assets/open.svg";
 import deleteIcon from "../../../assets/delete.svg";
@@ -35,6 +35,37 @@ class WelcomePage extends Component {
             ],
             recents: [],
         };
+
+        this.recentDocs = React.createRef(null);
+    }
+
+    componentDidMount() {
+        const recentDocs = [...this.props.docslist]
+            .sort((doc1, doc2) => doc2.updatedAt - doc1.updatedAt)
+            .slice(0, 5);
+        this.recentDocs.current = recentDocs;
+
+        this.setState({ recents: recentDocs });
+    }
+
+    componentDidUpdate() {
+        const recentDocs = [...this.props.docslist]
+            .sort((doc1, doc2) => doc2.updatedAt - doc1.updatedAt)
+            .slice(0, 5);
+        this.recentDocs.current = recentDocs;
+
+        const updateAvailable =
+            this.state.recents.length != recentDocs.length ||
+            recentDocs.some(
+                (recDoc) =>
+                    this.state.recents.findIndex(
+                        (doc) => doc.name === recDoc.name
+                    ) < 0
+            );
+
+        if(updateAvailable) {
+            this.setState({ recents: recentDocs });
+        }
     }
 
     render() {
@@ -68,11 +99,11 @@ class WelcomePage extends Component {
                         </div>
                     </section>
                     <section>
-                        <h2>Recent</h2>
+                        <h2>Recents</h2>
                         <div>
                             {this.state.recents.length
                                 ? this.state.recents.map((doc, idx) => (
-                                      <button key={idx} className="option-btn">
+                                      <button key={idx} className="option-btn" onClick={this.openCommandHandler.bind(this, doc.name)}>
                                           {doc.name}
                                       </button>
                                   ))
@@ -99,7 +130,9 @@ class WelcomePage extends Component {
 }
 
 function mapStateToProps(state) {
-    return {};
+    return {
+        docslist: state.documents.savedList,
+    };
 }
 
 function mapDispatchToProps(dispatch) {

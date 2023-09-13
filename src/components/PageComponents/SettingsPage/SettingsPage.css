@@ -1,5 +1,5 @@
 .SettingsPage {
-    flex: 1;
+    /* flex: 1; */
     background-color: var(--background-color);
     padding-top: 4vh;
 }

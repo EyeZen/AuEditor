@@ -1,15 +1,15 @@
 .editor {
-    --_editor-height: 100vh;
-    --_toolbar-height: 43px;
+    /* --_toolbar-height: 43px; */
     color: var(--text-color);
-    flex: 1;
+    /* flex: 1; */
 }
 
 .quill {
     background-color: var(--background-color);
+    height: 100%;
 }
 .ql-container { 
-    height: calc(100vh - var(--_toolbar-height) - var(--tabbar-height));
+    height: var(--quill-editor-height);
 }
 .ql-snow.ql-toolbar { 
     border-color: var(--border-color);
@@ -31,6 +31,6 @@
 
 @media only screen and (max-width: 768px) {
     .ql-editor {
-        height: calc(100vh - 2 * var(--_toolbar-height));
+        /* height: calc(100vh - 2 * var(--_toolbar-height)); */
     }
 }

@@ -1,0 +1,79 @@
+.AboutPage {
+    background-color: var(--background-color-light);
+    padding-block: 5%;
+}
+.AboutPage > * {
+    margin-inline: auto;
+    max-width: 50%;
+}
+.AboutPage h1 {
+    text-align: center;
+    font-size: 3em;
+    margin-bottom: 0.5em;
+}
+.AboutPage p {
+    line-height: 1.5em;
+    margin-bottom: 1em;
+}
+.AboutPage .disclaimer {
+    font-size: 0.9em;
+    text-align: center;
+}
+
+.AboutPage form {
+    margin-block: 2em;
+    background-color: var(--background-color);
+    padding: 1em;
+    border-radius: 2px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.606);
+
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    align-items: center;
+}
+
+.AboutPage form h2 {
+    text-align: center;
+    width: 100%;
+    padding: 0.5em;
+    border-radius: 10px;
+}
+
+.AboutPage form textarea {
+    width: 80%;
+    height: 200px;
+    background-color: var(--background-color-light);
+    color: var(--text-color);
+    resize: none;
+    padding: 1em;
+    border: none;
+    box-shadow: 0 0 5px var(--border-color);
+
+    &:focus {
+        outline: none;
+    }
+}
+
+.AboutPage form button {
+    /* width: 20%; */
+    padding: 0.5em 1.5em;
+    color: var(--text-color);
+    background-color: var(--background-color-dark);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: var(--background-color-light);
+    }
+    &:active {
+        background-color: var(--background-color-dark);
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .AboutPage > * {
+        max-width: 90%;
+    }
+}
